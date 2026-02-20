@@ -1,62 +1,169 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Prime Checker</title>
+    <title>Prime Number Project</title>
     <style>
         body {
-            background-color: #111;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #16222A, #3A6073);
             color: white;
+            margin: 0;
+            padding: 40px;
+        }
+
+        h1 {
             text-align: center;
-            font-family: Arial;
-            padding-top: 100px;
+            margin-bottom: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         input {
+            width: 100%;
             padding: 10px;
-            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
         button {
-            padding: 10px 20px;
-            font-size: 16px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background-color: #00d4ff;
+            font-weight: bold;
             cursor: pointer;
+            margin-bottom: 10px;
         }
 
-        #result {
+        button:hover {
+            background-color: #00aacc;
+        }
+
+        .big-number {
+            font-size: 42px;
+            text-align: center;
             margin-top: 20px;
-            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #primeList {
+            max-height: 300px;
+            overflow-y: auto;
+            word-wrap: break-word;
+        }
+
+        .result-text {
+            margin-top: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <h1>Prime Number Checker 🔢</h1>
+<h1>Prime Number Generator & Checker</h1>
 
-    <input type="number" id="numberInput" placeholder="Enter a number">
-    <button onclick="checkPrime()">Check</button>
+<div class="grid">
 
-    <div id="result"></div>
+    <!-- Column 1 -->
+    <div class="card">
+        <h2>Check Single Number</h2>
+        <p>Enter one number to check if it is prime or not.</p>
 
-    <script>
-        function checkPrime() {
-            let n = parseInt(document.getElementById("numberInput").value);
-            let result = document.getElementById("result");
+        <input type="number" id="singleNumber" placeholder="Enter number">
+        <button onclick="checkPrime()">Check Prime</button>
 
-            if (n < 2) {
-                result.innerHTML = "Not a prime number";
-                return;
-            }
+        <div id="checkResult" class="result-text"></div>
 
-            for (let i = 2; i * i <= n; i++) {
-                if (n % i === 0) {
-                    result.innerHTML = "Not a prime number";
-                    return;
-                }
-            }
+        <hr>
 
-            result.innerHTML = "It is a PRIME number 🎉";
+        <h2>Generate Primes Up To Limit</h2>
+        <p>Generate all prime numbers up to a selected limit.</p>
+
+        <input type="number" id="limit" placeholder="Enter limit">
+        <button onclick="generatePrimes()">Generate</button>
+    </div>
+
+    <!-- Column 2 -->
+    <div class="card">
+        <h2>Total Prime Numbers</h2>
+        <p>Total number of primes within the selected limit.</p>
+        <div id="totalPrime" class="big-number">0</div>
+    </div>
+
+    <!-- Column 3 -->
+    <div class="card">
+        <h2>Prime Number List</h2>
+        <p>Complete list of prime numbers up to the limit.</p>
+        <div id="primeList"></div>
+    </div>
+
+</div>
+
+<script>
+function checkPrime() {
+    let num = parseInt(document.getElementById("singleNumber").value);
+
+    if (isNaN(num) || num < 2) {
+        document.getElementById("checkResult").innerHTML = "Please enter a number greater than 1.";
+        return;
+    }
+
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+        if (num % i === 0) {
+            document.getElementById("checkResult").innerHTML = num + " is NOT a Prime Number.";
+            return;
         }
-    </script>
+    }
+
+    document.getElementById("checkResult").innerHTML = num + " IS a Prime Number!";
+}
+
+function generatePrimes() {
+    let limit = parseInt(document.getElementById("limit").value);
+
+    if (isNaN(limit) || limit < 2) {
+        document.getElementById("totalPrime").innerHTML = "0";
+        document.getElementById("primeList").innerHTML = "Please enter a number greater than 1.";
+        return;
+    }
+
+    let isPrime = Array(limit + 1).fill(true);
+    isPrime[0] = false;
+    isPrime[1] = false;
+
+    for (let i = 2; i <= Math.sqrt(limit); i++) {
+        if (isPrime[i]) {
+            for (let j = i * i; j <= limit; j += i) {
+                isPrime[j] = false;
+            }
+        }
+    }
+
+    let primes = [];
+    for (let i = 0; i <= limit; i++) {
+        if (isPrime[i]) {
+            primes.push(i);
+        }
+    }
+
+    document.getElementById("totalPrime").innerHTML = primes.length;
+    document.getElementById("primeList").innerHTML = primes.join(", ");
+}
+</script>
 
 </body>
 </html>
